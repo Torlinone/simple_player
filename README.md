@@ -1,6 +1,6 @@
 # simple_player
 
-A new Flutter application.
+A simple Flutter local Music Player application.
 
 ## Getting Started
 
