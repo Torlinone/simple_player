@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_player/providers/media_list_provider.dart';
+import 'package:simple_player/providers/player_provider.dart';
 
 class MusicListPage extends StatefulWidget {
   @override
@@ -63,6 +64,20 @@ class MediaItem extends StatelessWidget {
       child: ListTile(
         leading: albumPath == null ? null : Image.file(File(albumPath)),
         title: Text(media.title),
+        trailing: Selector<PlayerProvider, String>(
+          selector: (BuildContext context, PlayerProvider playerProvider) =>
+              playerProvider.curSongId,
+          builder: (BuildContext context, String curId, _) {
+            Widget icon = curId == media.id ? Icon(Icons.pause) : Icon(Icons.play_arrow);
+            return IconButton(
+              onPressed: () {
+                // todo play and set curSong info
+                final PlayerProvider provider = Provider.of<PlayerProvider>(context);
+              },
+              icon: icon,
+            );
+          },
+        ),
       ),
     );
   }
