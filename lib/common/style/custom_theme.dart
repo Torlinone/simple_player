@@ -10,6 +10,7 @@ class CustomTheme {
     this.weightShadowBlur,
     this.lightShadowOffset,
     this.weightShadowOffset,
+    this.actionGradient,
   });
 
   Color lightShadowColor;
@@ -24,6 +25,8 @@ class CustomTheme {
   Offset lightShadowOffset;
   Offset weightShadowOffset;
 
+  Gradient actionGradient;
+
   // todo : all same to dark , will be set in v2.0
   factory CustomTheme.light() => CustomTheme(
         lightShadowColor: Color.fromARGB(255, 46, 42, 53),
@@ -32,6 +35,14 @@ class CustomTheme {
         lightBorderColor: Color.fromARGB(255, 31, 36, 42),
         lightShadowOffset: Offset.zero,
         weightShadowOffset: Offset.zero,
+        actionGradient: LinearGradient(
+          begin: Alignment(0.5, 0),
+          end: Alignment(0.5, 1),
+          colors: [
+            Color.fromARGB(255, 51, 54, 59),
+            Color.fromARGB(255, 37, 40, 45),
+          ],
+        ),
         lightShadowBlur: 3,
         weightShadowBlur: 3,
       );
@@ -43,6 +54,14 @@ class CustomTheme {
         lightBorderColor: Color.fromARGB(255, 31, 36, 42),
         lightShadowOffset: Offset.zero,
         weightShadowOffset: Offset.zero,
+        actionGradient: LinearGradient(
+          begin:Alignment.topCenter,
+          end:Alignment.bottomCenter,
+          colors: [
+            Color.fromARGB(255, 37, 40, 45),
+            Color.fromARGB(255, 51, 54, 59),
+          ],
+        ),
         lightShadowBlur: 3,
         weightShadowBlur: 3,
       );

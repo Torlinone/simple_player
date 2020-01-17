@@ -10,7 +10,6 @@ class PlayerPage extends StatefulWidget {
 
 class _PlayerPageState extends State<PlayerPage>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
-
   // todo play front and background
   @override
   void initState() {
@@ -87,14 +86,86 @@ class PlayerController extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 70, vertical: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
       child: AspectRatio(
         aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.orangeAccent,
-              border: Border.all(width: 1, color: CustomTheme.of(context).darkShadowColor)),
+        child: Stack(
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.orangeAccent,
+                border: Border.all(width: 1, color: CustomTheme.of(context).darkShadowColor),
+              ),
+              child: Container(
+                margin: const EdgeInsets.all(60),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: CustomTheme.of(context).darkShadowColor),
+                  gradient: CustomTheme.of(context).actionGradient,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.play_arrow),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            ActionBtn(
+              alignment: Alignment.topCenter,
+              icon: Icons.add,
+              onPressed: () {},
+            ),
+            ActionBtn(
+              alignment: Alignment.bottomCenter,
+              icon: Icons.remove,
+              onPressed: () {},
+            ),
+            ActionBtn(
+              alignment: Alignment.centerLeft,
+              icon: Icons.skip_previous,
+              onPressed: () {},
+            ),
+            ActionBtn(
+              alignment: Alignment.centerRight,
+              icon: Icons.skip_next,
+              onPressed: () {},
+            ),
+            ActionBtn(
+              alignment: Alignment.topCenter,
+              icon: Icons.add,
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ActionBtn extends StatelessWidget {
+  ActionBtn({
+    Key key,
+    @required this.alignment,
+    @required this.onPressed,
+    @required this.icon,
+  }) : super(key: key);
+  final AlignmentGeometry alignment;
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: alignment,
+      child: Container(
+        width: 60,
+        height: 60,
+        alignment: Alignment.center,
+        child: IconButton(
+          icon: Icon(icon),
+          onPressed: onPressed,
         ),
       ),
     );
