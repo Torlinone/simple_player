@@ -21,9 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       themeMode: ThemeMode.dark,
       theme: CustomTheme.systemTheme(context, Brightness.dark),
-      home: Consumer<MediaListProvider>(
-        builder: (BuildContext context, MediaListProvider mediaListProvider, _) => HomePage(mediaListProvider),
-      ),
+      home: HomePage(),
     );
   }
 }

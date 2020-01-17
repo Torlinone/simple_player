@@ -1,15 +1,24 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_player/providers/media_list_provider.dart';
 
-class MusicListPage extends StatelessWidget {
+class MusicListPage extends StatefulWidget {
+  @override
+  _MusicListPageState createState() => _MusicListPageState();
+}
+
+class _MusicListPageState extends State<MusicListPage>
+    with AutomaticKeepAliveClientMixin<MusicListPage> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('music list page'),
-      ),
+      appBar: AppBar(title: Text('music list page')),
       body: MediaList(),
     );
   }
@@ -21,20 +30,40 @@ class MediaList extends StatelessWidget {
     return Consumer<MediaListProvider>(
       builder: (BuildContext context, MediaListProvider mediaListProvider, _) {
         if (mediaListProvider.loading) {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         }
 
         if (mediaListProvider.mediaList is List && mediaListProvider.mediaList.isNotEmpty) {
-          final List<SongInfo> list = mediaListProvider.mediaList;
           return ListView.builder(
-            itemBuilder: (BuildContext context, int index) => Text(list[index].title),
-            itemCount: list.length,
-            itemExtent: 40,
+            itemBuilder: (BuildContext context, int index) => MediaItem(
+              mediaListProvider.mediaList[index],
+              albumPath: mediaListProvider.mediaList[index].albumId == null
+                  ? null
+                  : mediaListProvider.queryAlbumInCache(mediaListProvider.mediaList[index].albumId),
+            ),
+            itemCount: mediaListProvider.mediaList.length,
           );
         }
 
         return Container();
       },
+    );
+  }
+}
+
+class MediaItem extends StatelessWidget {
+  MediaItem(this.media, {this.albumPath});
+
+  final SongInfo media;
+  final String albumPath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: ListTile(
+        leading: albumPath == null ? null : Image.file(File(albumPath)),
+        title: Text(media.title),
+      ),
     );
   }
 }

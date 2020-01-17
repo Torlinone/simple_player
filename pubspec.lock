@@ -94,7 +94,11 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_audio_query
+<<<<<<< HEAD
       url: "https://pub.dartlang.org"
+=======
+      url: "https://pub.flutter-io.cn"
+>>>>>>> 50d62367b89fd0ec3396ef800cc2bc94b9a719f0
     source: hosted
     version: "0.3.3"
   flutter_isolate:
@@ -141,7 +145,11 @@ packages:
     dependency: "direct main"
     description:
       name: just_audio
+<<<<<<< HEAD
       url: "https://pub.dartlang.org"
+=======
+      url: "https://pub.flutter-io.cn"
+>>>>>>> 50d62367b89fd0ec3396ef800cc2bc94b9a719f0
     source: hosted
     version: "0.0.6"
   matcher:
