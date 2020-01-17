@@ -112,27 +112,27 @@ class PlayerController extends StatelessWidget {
                 ),
               ),
             ),
-            ActionBtn(
+            _ActionBtn(
               alignment: Alignment.topCenter,
               icon: Icons.add,
               onPressed: () {},
             ),
-            ActionBtn(
+            _ActionBtn(
               alignment: Alignment.bottomCenter,
               icon: Icons.remove,
               onPressed: () {},
             ),
-            ActionBtn(
+            _ActionBtn(
               alignment: Alignment.centerLeft,
               icon: Icons.skip_previous,
               onPressed: () {},
             ),
-            ActionBtn(
+            _ActionBtn(
               alignment: Alignment.centerRight,
               icon: Icons.skip_next,
               onPressed: () {},
             ),
-            ActionBtn(
+            _ActionBtn(
               alignment: Alignment.topCenter,
               icon: Icons.add,
               onPressed: () {},
@@ -144,8 +144,8 @@ class PlayerController extends StatelessWidget {
   }
 }
 
-class ActionBtn extends StatelessWidget {
-  ActionBtn({
+class _ActionBtn extends StatelessWidget {
+  _ActionBtn({
     Key key,
     @required this.alignment,
     @required this.onPressed,
@@ -155,6 +155,7 @@ class ActionBtn extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
+  // todo play cation
   @override
   Widget build(BuildContext context) {
     return Align(

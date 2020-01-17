@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_player/providers/media_list_provider.dart';
-import 'package:simple_player/providers/player_provider.dart';
+import 'package:simple_player/providers/play_info_provider.dart';
 
 class MusicListPage extends StatefulWidget {
   @override
@@ -21,6 +21,7 @@ class _MusicListPageState extends State<MusicListPage>
     return Scaffold(
       appBar: AppBar(title: Text('music list page')),
       body: MediaList(),
+      bottomNavigationBar: PlayingBoard(),
     );
   }
 }
@@ -40,7 +41,8 @@ class MediaList extends StatelessWidget {
               mediaListProvider.mediaList[index],
               albumPath: mediaListProvider.mediaList[index].albumId == null
                   ? null
-                  : mediaListProvider.queryAlbumInCache(mediaListProvider.mediaList[index].albumId),
+                  : mediaListProvider
+                      .queryAlbumImgInCache(mediaListProvider.mediaList[index].albumId),
             ),
             itemCount: mediaListProvider.mediaList.length,
           );
@@ -64,21 +66,56 @@ class MediaItem extends StatelessWidget {
       child: ListTile(
         leading: albumPath == null ? null : Image.file(File(albumPath)),
         title: Text(media.title),
-        trailing: Selector<PlayerProvider, String>(
-          selector: (BuildContext context, PlayerProvider playerProvider) =>
-              playerProvider.curSongId,
-          builder: (BuildContext context, String curId, _) {
-            Widget icon = curId == media.id ? Icon(Icons.pause) : Icon(Icons.play_arrow);
+        trailing: Selector<PlayInfoProvider, String>(
+          selector: (BuildContext context, PlayInfoProvider infoProvider) =>
+              infoProvider.playingSong?.id,
+          builder: (BuildContext context, String id, _) {
+            Widget icon = id == media.id ? Icon(Icons.pause) : Icon(Icons.play_arrow);
             return IconButton(
               onPressed: () {
-                // todo play and set curSong info
-                final PlayerProvider provider = Provider.of<PlayerProvider>(context);
+                final PlayInfoProvider infoProvider =
+                    Provider.of<PlayInfoProvider>(context, listen: false);
+                infoProvider.setPlayingSong(media);
               },
               icon: icon,
             );
           },
         ),
       ),
+    );
+  }
+}
+
+class PlayingBoard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PlayInfoProvider>(
+      builder: (BuildContext context, PlayInfoProvider infoProvider, _) {
+        return infoProvider.playingSong == null
+            ? SizedBox(height: 0)
+            : Container(
+                height: 100,
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(255, 46, 42, 53),
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
+                child: MediaItem(
+                  infoProvider.playingSong,
+                  albumPath: infoProvider.list.queryAlbumImgInCache(infoProvider.playingSong.id),
+                ),
+              );
+      },
     );
   }
 }

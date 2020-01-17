@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_player/pages/music_list/music_list_page.dart';
 import 'package:simple_player/pages/player/player_page.dart';
 import 'package:simple_player/providers/media_list_provider.dart';
+import 'package:simple_player/providers/play_info_provider.dart';
+import 'package:simple_player/providers/player_provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,12 +23,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: <Widget>[
-          PlayerPage(),
-          MusicListPage(),
-        ],
+      body: ChangeNotifierProxyProvider2<PlayerProvider, MediaListProvider, PlayInfoProvider>(
+        create: (BuildContext context) => PlayInfoProvider(),
+        update: (
+          BuildContext context,
+          PlayerProvider playerProvider,
+          MediaListProvider listProvider,
+          PlayInfoProvider infoProvider,
+        ) =>
+            infoProvider
+              ..player = playerProvider
+              ..list = listProvider,
+        child: PageView(
+          controller: _pageController,
+          children: <Widget>[
+            PlayerPage(),
+            MusicListPage(),
+          ],
+        ),
       ),
     );
   }

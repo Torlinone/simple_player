@@ -41,9 +41,17 @@ class MediaListProvider with ChangeNotifier {
   }
 
   // 通过专辑id找到专辑的封面地址
-  String queryAlbumInCache(String id) {
+  String queryAlbumImgInCache(String albumId) {
     if (_albumInfo is List && _albumInfo.isNotEmpty) {
-      return _albumInfo.firstWhere((item) => item.id == id, orElse: () => null)?.albumArt;
+      return queryAlbumInCache(albumId)?.albumArt;
+    }
+    return null;
+  }
+
+  // 通过专辑id找到专辑信息
+  AlbumInfo queryAlbumInCache(String albumId) {
+    if (_albumInfo is List && _albumInfo.isNotEmpty) {
+      return _albumInfo.firstWhere((item) => item.id == albumId, orElse: () => null);
     }
     return null;
   }

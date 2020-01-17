@@ -55,11 +55,11 @@ class CustomTheme {
         lightShadowOffset: Offset.zero,
         weightShadowOffset: Offset.zero,
         actionGradient: LinearGradient(
-          begin:Alignment.topCenter,
-          end:Alignment.bottomCenter,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            Color.fromARGB(255, 37, 40, 45),
             Color.fromARGB(255, 51, 54, 59),
+            Color.fromARGB(255, 37, 40, 45),
           ],
         ),
         lightShadowBlur: 3,
