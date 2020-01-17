@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_player/common/style/custom_theme.dart';
-import 'package:simple_player/pages/home.dart';
+import 'package:simple_player/pages/splash_page.dart';
 import 'package:simple_player/providers/media_list_provider.dart';
 import 'package:simple_player/providers/player_provider.dart';
 
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       themeMode: ThemeMode.dark,
       theme: CustomTheme.systemTheme(context, Brightness.dark),
-      home: HomePage(),
+      home: SplashPage(),
     );
   }
 }

@@ -14,8 +14,10 @@ class MediaListProvider with ChangeNotifier {
   List<AlbumInfo> get albumInfo => _albumInfo;
   List<AlbumInfo> _albumInfo;
 
-  bool get loading => _loading;
+  bool get hasInit => _hasInit;
+  bool _hasInit = false;
 
+  bool get loading => _loading;
   bool _loading = false;
 
   Future<void> getMediaList([bool notify = true]) async {
@@ -23,12 +25,15 @@ class MediaListProvider with ChangeNotifier {
       _loading = true;
       notifyListeners();
     }
+    _hasInit = false;
 
     List<SongInfo> list = await audioQuery.getSongs();
+    _albumInfo = await audioQuery.getAlbums();
 
     if (list is List && list.isNotEmpty) {
       _mediaList = list.where((item) => item.isMusic).toList();
     }
+    _hasInit = true;
     if (notify) {
       _loading = false;
       notifyListeners();
