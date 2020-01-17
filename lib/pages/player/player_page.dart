@@ -45,20 +45,24 @@ class _PlayerPageState extends State<PlayerPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('player page'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Expanded(child: ThumbList()),
-          Spectrum(),
-          PlayerController(),
-          SizedBox(
-            height: MediaQuery.of(context).padding.bottom,
-          )
-        ],
+    return WillPopScope(
+      onWillPop: () {
+        PlayerProvider.disconnect();
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('player page'),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(child: ThumbList()),
+            Spectrum(),
+            PlayerController(),
+            SizedBox(height: MediaQuery.of(context).padding.bottom)
+          ],
+        ),
       ),
     );
   }
@@ -100,7 +104,7 @@ class PlayerController extends StatelessWidget {
                 border: Border.all(width: 1, color: CustomTheme.of(context).darkShadowColor),
               ),
               child: Container(
-                margin: const EdgeInsets.all(60),
+                margin: const EdgeInsets.all(70),
                 decoration: BoxDecoration(
                   border: Border.all(width: 1, color: CustomTheme.of(context).darkShadowColor),
                   gradient: CustomTheme.of(context).actionGradient,
@@ -132,11 +136,6 @@ class PlayerController extends StatelessWidget {
               icon: Icons.skip_next,
               onPressed: () {},
             ),
-            _ActionBtn(
-              alignment: Alignment.topCenter,
-              icon: Icons.add,
-              onPressed: () {},
-            ),
           ],
         ),
       ),
@@ -151,18 +150,18 @@ class _ActionBtn extends StatelessWidget {
     @required this.onPressed,
     @required this.icon,
   }) : super(key: key);
+
   final AlignmentGeometry alignment;
   final VoidCallback onPressed;
   final IconData icon;
 
-  // todo play cation
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: alignment,
       child: Container(
-        width: 60,
-        height: 60,
+        width: 70,
+        height: 70,
         alignment: Alignment.center,
         child: IconButton(
           icon: Icon(icon),
