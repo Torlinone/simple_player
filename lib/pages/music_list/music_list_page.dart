@@ -37,7 +37,7 @@ class MediaList extends StatelessWidget {
 
         if (mediaListProvider.mediaList is List && mediaListProvider.mediaList.isNotEmpty) {
           return ListView.builder(
-            itemBuilder: (BuildContext context, int index) => MediaItem(
+            itemBuilder: (BuildContext context, int index) => MediaItemWidget(
               mediaListProvider.mediaList[index],
               albumPath: mediaListProvider.mediaList[index].albumId == null
                   ? null
@@ -54,8 +54,8 @@ class MediaList extends StatelessWidget {
   }
 }
 
-class MediaItem extends StatelessWidget {
-  MediaItem(this.media, {this.albumPath});
+class MediaItemWidget extends StatelessWidget {
+  MediaItemWidget(this.media, {this.albumPath});
 
   final SongInfo media;
   final String albumPath;
@@ -110,7 +110,7 @@ class PlayingBoard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: MediaItem(
+                child: MediaItemWidget(
                   infoProvider.playingSong,
                   albumPath: infoProvider.list.queryAlbumImgInCache(infoProvider.playingSong.id),
                 ),

@@ -1,7 +1,22 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class PlayerProvider with ChangeNotifier {
+  PlayerProvider() {
+    init();
+  }
+
+  StreamSubscription _screenStateSub;
+
+  BasicPlaybackState get basicPlaybackState => _basicPlaybackState ?? BasicPlaybackState.none;
+  BasicPlaybackState _basicPlaybackState;
+
+  int get curPosition => _curPosition;
+  int _curPosition;
+
   static Future<void> connect() async {
     await AudioService.connect();
   }
@@ -10,34 +25,39 @@ class PlayerProvider with ChangeNotifier {
     await AudioService.disconnect();
   }
 
-  /// MediaControl
-  static MediaControl playControl = MediaControl(
-    androidIcon: 'drawable/ic_action_play_arrow',
-    label: 'Play',
-    action: MediaAction.play,
-  );
+  static Future<void> Function() get play => AudioService.play;
 
-  static MediaControl pauseControl = MediaControl(
-    androidIcon: 'drawable/ic_action_pause',
-    label: 'Pause',
-    action: MediaAction.pause,
-  );
+  static Future<void> Function() get pause => AudioService.pause;
 
-  static MediaControl skipToNextControl = MediaControl(
-    androidIcon: 'drawable/ic_action_skip_next',
-    label: 'Next',
-    action: MediaAction.skipToNext,
-  );
+  static Future<void> Function() get stop => AudioService.stop;
 
-  static MediaControl skipToPreviousControl = MediaControl(
-    androidIcon: 'drawable/ic_action_skip_previous',
-    label: 'Previous',
-    action: MediaAction.skipToPrevious,
-  );
+  void init() {
+    _screenStateSub = Rx.combineLatest3<List<MediaItem>, MediaItem, PlaybackState, ScreenState>(
+            AudioService.queueStream,
+            AudioService.currentMediaItemStream,
+            AudioService.playbackStateStream,
+            (queue, mediaItem, playbackState) => ScreenState(queue, mediaItem, playbackState))
+        .listen((ScreenState screenState) {
+//      final queue = screenState?.queue;
+      final mediaItem = screenState?.mediaItem;
+      final state = screenState?.playbackState;
+      _basicPlaybackState = state?.basicState ?? BasicPlaybackState.none;
+      _curPosition = state?.currentPosition;
+      notifyListeners();
+    });
+  }
 
-  static MediaControl stopControl = MediaControl(
-    androidIcon: 'drawable/ic_action_stop',
-    label: 'Stop',
-    action: MediaAction.stop,
-  );
+  @override
+  void dispose() {
+    super.dispose();
+    _screenStateSub.cancel();
+  }
+}
+
+class ScreenState {
+  final List<MediaItem> queue;
+  final MediaItem mediaItem;
+  final PlaybackState playbackState;
+
+  ScreenState(this.queue, this.mediaItem, this.playbackState);
 }

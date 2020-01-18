@@ -1,6 +1,10 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_player/common/style/custom_theme.dart';
+import 'package:simple_player/pages/player/background_task.dart';
+import 'package:simple_player/providers/media_list_provider.dart';
 import 'package:simple_player/providers/player_provider.dart';
 
 class PlayerPage extends StatefulWidget {
@@ -8,8 +12,7 @@ class PlayerPage extends StatefulWidget {
   _PlayerPageState createState() => _PlayerPageState();
 }
 
-class _PlayerPageState extends State<PlayerPage>
-    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+class _PlayerPageState extends State<PlayerPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   // todo play front and background
   @override
   void initState() {
@@ -110,9 +113,69 @@ class PlayerController extends StatelessWidget {
                   gradient: CustomTheme.of(context).actionGradient,
                   shape: BoxShape.circle,
                 ),
-                child: IconButton(
-                  icon: Icon(Icons.play_arrow),
-                  onPressed: () {},
+                child: Selector<PlayerProvider, BasicPlaybackState>(
+                  selector: (BuildContext context, PlayerProvider provider) => provider.basicPlaybackState,
+                  builder: (BuildContext context, BasicPlaybackState state, _) {
+                    print('------------------');
+                    print(state);
+                    return IconButton(
+                      icon: state == null ||
+                              state == BasicPlaybackState.none ||
+                              state == BasicPlaybackState.paused ||
+                              state == BasicPlaybackState.stopped
+                          ? Icon(Icons.play_arrow)
+                          : Icon(Icons.pause),
+                      onPressed: () async {
+                        final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
+                        print('playerProvider');
+                        print(playerProvider.basicPlaybackState);
+                        if (state == null || state == BasicPlaybackState.none) {
+                          final MediaListProvider listProvider = Provider.of<MediaListProvider>(context, listen: false);
+                          final _queue = <MediaItem>[
+                            MediaItem(
+                              id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
+                              album: "Science Friday",
+                              title: "A Salute To Head-Scratching Science",
+                              artist: "Science Friday and WNYC Studios",
+                              duration: 5739820,
+                              artUri:
+                              "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
+                            ),
+                            MediaItem(
+                              id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
+                              album: "Science Friday",
+                              title: "From Cat Rheology To Operatic Incompetence",
+                              artist: "Science Friday and WNYC Studios",
+                              duration: 2856950,
+                              artUri:
+                              "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
+                            ),
+                          ];
+                          final res = await AudioService.start(
+                            backgroundTaskEntrypoint: () async {
+//                              AudioServiceBackground.run(() => AudioPlayerTask(listProvider.mediaInfoList));
+                              AudioServiceBackground.run(() => AudioPlayerTask(_queue));
+                            },
+                            resumeOnClick: true,
+                            androidNotificationChannelName: 'Audio Service Demo',
+                            notificationColor: 0xFF2196f3,
+                            androidNotificationIcon: 'mipmap/ic_launcher',
+                          );
+                          print('==============');
+                          print(res);
+                          return;
+                        }
+                        if (state == BasicPlaybackState.paused) {
+                          PlayerProvider.play();
+                          return;
+                        }
+                        if (state == BasicPlaybackState.playing) {
+                          PlayerProvider.pause();
+                          return;
+                        }
+                      },
+                    );
+                  },
                 ),
               ),
             ),
@@ -129,12 +192,12 @@ class PlayerController extends StatelessWidget {
             _ActionBtn(
               alignment: Alignment.centerLeft,
               icon: Icons.skip_previous,
-              onPressed: () {},
+              onPressed: AudioService.skipToPrevious,
             ),
             _ActionBtn(
               alignment: Alignment.centerRight,
               icon: Icons.skip_next,
-              onPressed: () {},
+              onPressed: AudioService.skipToNext,
             ),
           ],
         ),
@@ -143,6 +206,7 @@ class PlayerController extends StatelessWidget {
   }
 }
 
+// todo disable
 class _ActionBtn extends StatelessWidget {
   _ActionBtn({
     Key key,

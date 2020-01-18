@@ -67,6 +67,7 @@ class CustomTheme {
       );
 
   static ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
     appBarTheme: AppBarTheme(elevation: 0),
     scaffoldBackgroundColor: Color(0xFF2E3439),
     primarySwatch: MaterialColor(
@@ -88,6 +89,7 @@ class CustomTheme {
 
   // todo : all same to darkTheme , will be set in v2.0
   static ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
     appBarTheme: AppBarTheme(elevation: 0),
     scaffoldBackgroundColor: Color(0xFF2E3439),
     primarySwatch: MaterialColor(
