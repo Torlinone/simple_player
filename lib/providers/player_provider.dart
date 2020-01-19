@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:simple_player/pages/player/background_task.dart';
+import 'package:simple_player/providers/media_list_provider.dart';
 
 class PlayerProvider with ChangeNotifier {
   PlayerProvider() {
@@ -13,8 +14,8 @@ class PlayerProvider with ChangeNotifier {
 
   StreamSubscription _screenStateSub;
 
-  AudioPlayer get audioPlayer => _audioPlayer;
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  static AudioPlayer get audioPlayer => _audioPlayer;
+  static AudioPlayer _audioPlayer = AudioPlayer();
 
   BasicPlaybackState get basicPlaybackState => _basicPlaybackState ?? BasicPlaybackState.none;
   BasicPlaybackState _basicPlaybackState;
@@ -49,15 +50,24 @@ class PlayerProvider with ChangeNotifier {
       _basicPlaybackState = state?.basicState ?? BasicPlaybackState.none;
       _curPosition = state?.currentPosition;
       notifyListeners();
+      return screenState;
     });
   }
+
+  static Future<void> backgroundTaskEntryPoint() async {
+    AudioServiceBackground.run(() => AudioPlayerTask(MediaListProvider.mediaInfoList, _audioPlayer));
+  }
+
+//  static backgroundTaskEntryPointProvider(List<MediaItem> queue, AudioPlayer player) {
+//    return () async {
+//      AudioServiceBackground.run(() => AudioPlayerTask(queue, player));
+//    };
+//  }
 
   Future<bool> start(List<MediaItem> queue) {
     if (queue is List && queue.isNotEmpty) {
       return AudioService.start(
-        backgroundTaskEntrypoint: () async {
-          AudioServiceBackground.run(() => AudioPlayerTask(queue, _audioPlayer));
-        },
+        backgroundTaskEntrypoint: backgroundTaskEntryPoint,
         resumeOnClick: true,
         androidNotificationChannelName: 'simple_player',
         notificationColor: 0xFF2196f3,

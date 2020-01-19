@@ -14,11 +14,11 @@ class MediaListProvider with ChangeNotifier {
   List<SongInfo> get mediaList => _mediaList;
   List<SongInfo> _mediaList;
 
-  List<AlbumInfo> get albumInfo => _albumInfo;
-  List<AlbumInfo> _albumInfo;
+  static List<AlbumInfo> get albumInfo => _albumInfo;
+  static List<AlbumInfo> _albumInfo;
 
-  List<MediaItem> get mediaInfoList => _mediaInfoList;
-  List<MediaItem> _mediaInfoList;
+  static List<MediaItem> get mediaInfoList => _mediaInfoList;
+  static List<MediaItem> _mediaInfoList;
 
   bool get hasInit => _hasInit;
   bool _hasInit = false;

@@ -128,7 +128,9 @@ class PlayerController extends StatelessWidget {
                         if (state == null || state == BasicPlaybackState.none) {
                           final MediaListProvider listProvider = Provider.of<MediaListProvider>(context, listen: false);
                           final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
-                          playerProvider.start(listProvider.mediaInfoList);
+                          final bool res = await playerProvider.start(MediaListProvider.mediaInfoList);
+                          print('----res -------');
+                          print(res);
                           return;
                         }
                         if (state == BasicPlaybackState.paused) {
