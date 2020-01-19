@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:simple_player/pages/player/background_task.dart';
 
 class PlayerProvider with ChangeNotifier {
   PlayerProvider() {
@@ -10,6 +12,9 @@ class PlayerProvider with ChangeNotifier {
   }
 
   StreamSubscription _screenStateSub;
+
+  AudioPlayer get audioPlayer => _audioPlayer;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   BasicPlaybackState get basicPlaybackState => _basicPlaybackState ?? BasicPlaybackState.none;
   BasicPlaybackState _basicPlaybackState;
@@ -45,6 +50,22 @@ class PlayerProvider with ChangeNotifier {
       _curPosition = state?.currentPosition;
       notifyListeners();
     });
+  }
+
+  Future<bool> start(List<MediaItem> queue) {
+    if (queue is List && queue.isNotEmpty) {
+      return AudioService.start(
+        backgroundTaskEntrypoint: () async {
+          AudioServiceBackground.run(() => AudioPlayerTask(queue, _audioPlayer));
+        },
+        resumeOnClick: true,
+        androidNotificationChannelName: 'simple_player',
+        notificationColor: 0xFF2196f3,
+        androidNotificationIcon: 'mipmap/ic_launcher',
+      );
+    } else {
+      return Future.value(false);
+    }
   }
 
   @override

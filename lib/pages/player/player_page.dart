@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_player/common/style/custom_theme.dart';
-import 'package:simple_player/pages/player/background_task.dart';
 import 'package:simple_player/providers/media_list_provider.dart';
 import 'package:simple_player/providers/player_provider.dart';
 
@@ -126,43 +125,10 @@ class PlayerController extends StatelessWidget {
                           ? Icon(Icons.play_arrow)
                           : Icon(Icons.pause),
                       onPressed: () async {
-                        final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
-                        print('playerProvider');
-                        print(playerProvider.basicPlaybackState);
                         if (state == null || state == BasicPlaybackState.none) {
                           final MediaListProvider listProvider = Provider.of<MediaListProvider>(context, listen: false);
-                          final _queue = <MediaItem>[
-                            MediaItem(
-                              id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
-                              album: "Science Friday",
-                              title: "A Salute To Head-Scratching Science",
-                              artist: "Science Friday and WNYC Studios",
-                              duration: 5739820,
-                              artUri:
-                              "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-                            ),
-                            MediaItem(
-                              id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-                              album: "Science Friday",
-                              title: "From Cat Rheology To Operatic Incompetence",
-                              artist: "Science Friday and WNYC Studios",
-                              duration: 2856950,
-                              artUri:
-                              "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-                            ),
-                          ];
-                          final res = await AudioService.start(
-                            backgroundTaskEntrypoint: () async {
-//                              AudioServiceBackground.run(() => AudioPlayerTask(listProvider.mediaInfoList));
-                              AudioServiceBackground.run(() => AudioPlayerTask(_queue));
-                            },
-                            resumeOnClick: true,
-                            androidNotificationChannelName: 'Audio Service Demo',
-                            notificationColor: 0xFF2196f3,
-                            androidNotificationIcon: 'mipmap/ic_launcher',
-                          );
-                          print('==============');
-                          print(res);
+                          final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
+                          playerProvider.start(listProvider.mediaInfoList);
                           return;
                         }
                         if (state == BasicPlaybackState.paused) {

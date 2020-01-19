@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
-  AudioPlayerTask(this._queue);
+  AudioPlayerTask(this._queue, this._audioPlayer);
 
   final List<MediaItem> _queue;
-
+  final AudioPlayer _audioPlayer;
 //  final _queue = <MediaItem>[
 //    MediaItem(
 //      id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
@@ -28,7 +28,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
 //    ),
 //  ];
   int _queueIndex = -1;
-  AudioPlayer _audioPlayer = new AudioPlayer();
   Completer _completer = Completer();
   BasicPlaybackState _skipState;
   bool _playing;
