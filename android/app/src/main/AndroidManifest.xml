@@ -13,9 +13,11 @@
 
     <!--    android:name="io.flutter.app.FlutterApplication"-->
     <!--    android:name=".MainApplication"-->
+    <!--    android:name=".MainActivity"-->
+
 
     <application
-        android:name=".MainApplication"
+        android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="simple_player">
         <activity

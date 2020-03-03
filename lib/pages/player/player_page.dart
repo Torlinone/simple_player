@@ -127,8 +127,8 @@ class PlayerController extends StatelessWidget {
                       onPressed: () async {
                         if (state == null || state == BasicPlaybackState.none) {
                           final MediaListProvider listProvider = Provider.of<MediaListProvider>(context, listen: false);
-                          final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
-                          final bool res = await playerProvider.start(MediaListProvider.mediaInfoList);
+//                          final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
+                          final bool res = await PlayerProvider.start(MediaListProvider.mediaInfoList);
                           print('----res -------');
                           print(res);
                           return;

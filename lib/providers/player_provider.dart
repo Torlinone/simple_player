@@ -64,7 +64,7 @@ class PlayerProvider with ChangeNotifier {
 //    };
 //  }
 
-  Future<bool> start(List<MediaItem> queue) {
+  static Future<bool> start(List<MediaItem> queue) {
     if (queue is List && queue.isNotEmpty) {
       return AudioService.start(
         backgroundTaskEntrypoint: backgroundTaskEntryPoint,
