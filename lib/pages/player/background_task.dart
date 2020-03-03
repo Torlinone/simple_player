@@ -3,40 +3,28 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:simple_player/providers/media_list_provider.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
-  AudioPlayerTask(this._queue, this._audioPlayer);
+  AudioPlayerTask() {
+    // why mediaInfoList is empty
+    queue = MediaListProvider.mediaInfoList;
+  }
 
-  final List<MediaItem> _queue;
-  final AudioPlayer _audioPlayer;
-//  final _queue = <MediaItem>[
-//    MediaItem(
-//      id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
-//      album: "Science Friday",
-//      title: "A Salute To Head-Scratching Science",
-//      artist: "Science Friday and WNYC Studios",
-//      duration: 5739820,
-//      artUri: "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-//    ),
-//    MediaItem(
-//      id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-//      album: "Science Friday",
-//      title: "From Cat Rheology To Operatic Incompetence",
-//      artist: "Science Friday and WNYC Studios",
-//      duration: 2856950,
-//      artUri: "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-//    ),
-//  ];
+  final AudioPlayer audioPlayer = AudioPlayer();
+
+  List<MediaItem> queue = [];
+
   int _queueIndex = -1;
   Completer _completer = Completer();
   BasicPlaybackState _skipState;
   bool _playing;
 
-  bool get hasNext => _queueIndex + 1 < _queue.length;
+  bool get hasNext => _queueIndex + 1 < queue.length;
 
   bool get hasPrevious => _queueIndex > 0;
 
-  MediaItem get mediaItem => _queue[_queueIndex];
+  MediaItem get mediaItem => queue[_queueIndex];
 
   BasicPlaybackState _stateToBasicState(AudioPlaybackState state) {
     switch (state) {
@@ -48,8 +36,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return BasicPlaybackState.paused;
       case AudioPlaybackState.playing:
         return BasicPlaybackState.playing;
-//      case AudioPlaybackState.buffering:
-//        return BasicPlaybackState.buffering;
       case AudioPlaybackState.connecting:
         return _skipState ?? BasicPlaybackState.connecting;
       case AudioPlaybackState.completed:
@@ -62,10 +48,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onStart() async {
     var playerStateSubscription =
-        _audioPlayer.playbackStateStream.where((state) => state == AudioPlaybackState.completed).listen((state) {
+        audioPlayer.playbackStateStream.where((state) => state == AudioPlaybackState.completed).listen((state) {
       _handlePlaybackCompleted();
     });
-    var eventSubscription = _audioPlayer.playbackEventStream.listen((event) {
+    var eventSubscription = audioPlayer.playbackEventStream.listen((event) {
       final state = _stateToBasicState(event.state);
       if (state != BasicPlaybackState.stopped) {
         _setState(
@@ -75,7 +61,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     });
 
-    AudioServiceBackground.setQueue(_queue);
+    AudioServiceBackground.setQueue(queue);
     await onSkipToNext();
     await _completer.future;
     playerStateSubscription.cancel();
@@ -105,19 +91,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   Future<void> _skip(int offset) async {
     final newPos = _queueIndex + offset;
-    if (!(newPos >= 0 && newPos < _queue.length)) return;
+    if (!(newPos >= 0 && newPos < queue.length)) return;
     if (_playing == null) {
       // First time, we want to start playing
       _playing = true;
     } else if (_playing) {
       // Stop current item
-      await _audioPlayer.stop();
+      await audioPlayer.stop();
     }
     // Load next item
     _queueIndex = newPos;
     AudioServiceBackground.setMediaItem(mediaItem);
     _skipState = offset > 0 ? BasicPlaybackState.skippingToNext : BasicPlaybackState.skippingToPrevious;
-    await _audioPlayer.setFilePath(mediaItem.id);
+    await audioPlayer.setFilePath(mediaItem.id);
     _skipState = null;
     // Resume playback if we were playing
     if (_playing) {
@@ -131,7 +117,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onPlay() {
     if (_skipState == null) {
       _playing = true;
-      _audioPlayer.play();
+      audioPlayer.play();
     }
   }
 
@@ -139,13 +125,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onPause() {
     if (_skipState == null) {
       _playing = false;
-      _audioPlayer.pause();
+      audioPlayer.pause();
     }
   }
 
   @override
   void onSeekTo(int position) {
-    _audioPlayer.seek(Duration(milliseconds: position));
+    audioPlayer.seek(Duration(milliseconds: position));
   }
 
   @override
@@ -155,14 +141,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onStop() {
-    _audioPlayer.stop();
+    audioPlayer.stop();
     _setState(state: BasicPlaybackState.stopped);
     _completer.complete();
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {
     if (position == null) {
-      position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      position = audioPlayer.playbackEvent.position.inMilliseconds;
     }
     AudioServiceBackground.setState(
       controls: getControls(state),
@@ -211,3 +197,7 @@ MediaControl stopControl = MediaControl(
   label: 'Stop',
   action: MediaAction.stop,
 );
+
+backgroundTaskEntryPoint() async {
+  AudioServiceBackground.run(() => AudioPlayerTask());
+}

@@ -12,7 +12,6 @@ class PlayerPage extends StatefulWidget {
 }
 
 class _PlayerPageState extends State<PlayerPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
-  // todo play front and background
   @override
   void initState() {
     super.initState();
@@ -115,8 +114,6 @@ class PlayerController extends StatelessWidget {
                 child: Selector<PlayerProvider, BasicPlaybackState>(
                   selector: (BuildContext context, PlayerProvider provider) => provider.basicPlaybackState,
                   builder: (BuildContext context, BasicPlaybackState state, _) {
-                    print('------------------');
-                    print(state);
                     return IconButton(
                       icon: state == null ||
                               state == BasicPlaybackState.none ||
@@ -126,8 +123,6 @@ class PlayerController extends StatelessWidget {
                           : Icon(Icons.pause),
                       onPressed: () async {
                         if (state == null || state == BasicPlaybackState.none) {
-                          final MediaListProvider listProvider = Provider.of<MediaListProvider>(context, listen: false);
-//                          final PlayerProvider playerProvider = Provider.of<PlayerProvider>(context, listen: false);
                           final bool res = await PlayerProvider.start(MediaListProvider.mediaInfoList);
                           print('----res -------');
                           print(res);

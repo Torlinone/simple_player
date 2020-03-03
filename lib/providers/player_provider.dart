@@ -14,9 +14,6 @@ class PlayerProvider with ChangeNotifier {
 
   StreamSubscription _screenStateSub;
 
-  static AudioPlayer get audioPlayer => _audioPlayer;
-  static AudioPlayer _audioPlayer = AudioPlayer();
-
   BasicPlaybackState get basicPlaybackState => _basicPlaybackState ?? BasicPlaybackState.none;
   BasicPlaybackState _basicPlaybackState;
 
@@ -53,16 +50,6 @@ class PlayerProvider with ChangeNotifier {
       return screenState;
     });
   }
-
-  static Future<void> backgroundTaskEntryPoint() async {
-    AudioServiceBackground.run(() => AudioPlayerTask(MediaListProvider.mediaInfoList, _audioPlayer));
-  }
-
-//  static backgroundTaskEntryPointProvider(List<MediaItem> queue, AudioPlayer player) {
-//    return () async {
-//      AudioServiceBackground.run(() => AudioPlayerTask(queue, player));
-//    };
-//  }
 
   static Future<bool> start(List<MediaItem> queue) {
     if (queue is List && queue.isNotEmpty) {
